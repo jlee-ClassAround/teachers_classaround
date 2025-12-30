@@ -40,3 +40,16 @@ next-env.d.ts
 
 *.db
 *.db-journal
+
+
+
+# # prisma setting
+src/generated/cojooboo/*
+!src/generated/cojooboo/.gitkeep
+src/generated/ivy/*
+!src/generated/ivy/.gitkeep
+src/generated/classaround/*
+!src/generated/classaround/.gitkeep
+src/generated/mysql/*
+!src/generated/mysql/.gitkeep
+
