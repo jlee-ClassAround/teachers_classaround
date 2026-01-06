@@ -48,7 +48,7 @@ export default function LoginForm() {
 
     setIsLoading(true);
     requestAnimationFrame(() => {
-      const path = `kakao/${selectedBrand}/start`;
+      const path = `/kakao/${selectedBrand}/start`;
       router.push(path);
       
     });
