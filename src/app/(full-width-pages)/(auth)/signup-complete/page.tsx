@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { CheckCircle2, Clock } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react"; // 1. Suspense 임포트
 
-export default function SignupComplete() {
+// 2. 실제 내용을 담은 컴포넌트를 분리합니다.
+function SignupCompleteContent() {
   const searchParams = useSearchParams();
   const isPending = searchParams.get("status") === "pending";
 
@@ -37,5 +39,18 @@ export default function SignupComplete() {
         </Link>
       </div>
     </div>
+  );
+}
+
+// 3. 페이지 기본 Export에서는 컴포넌트를 Suspense로 감싸서 내보냅니다.
+export default function SignupComplete() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-slate-500">잠시만 기다려 주세요...</p>
+      </div>
+    }>
+      <SignupCompleteContent />
+    </Suspense>
   );
 }
