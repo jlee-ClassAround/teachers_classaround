@@ -1,16 +1,17 @@
 import { KakaoUser } from "@/app/types/kakao-user";
-import { ivyDb } from "@/lib/ivyDb";
+import { caDb } from "@/lib/caDb";
 import { normalizeKRPhoneNumber } from "@/lib/formats";
 import { UserLogin } from "@/lib/user-login";
 
 import crypto from "crypto";
+import { Faster_One } from "next/font/google";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
 async function getToken(code: string) {
   const searchParams = new URLSearchParams({
     grant_type: "authorization_code",
-    client_id: process.env.KAKAO_ivy_CLIENT_ID!,
+    client_id: process.env.KAKAO_IVY_CLIENT_ID!,
     redirect_uri: process.env.NEXT_PUBLIC_APP_URL! + "/kakao/ivy/complete",
     code,
   }).toString();
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
   const redirectPath = req.nextUrl.searchParams.get("state");
   const redirectUrl = redirectPath
     ? decodeURIComponent(redirectPath)
-    : "/mypage";
+    : "/";
 
   const token = await getToken(code);
   if (!token) return new Response("token not exists", { status: 400 });
@@ -63,19 +64,51 @@ export async function GET(req: NextRequest) {
 
   const phoneNumber = kakaoPhone ? normalizeKRPhoneNumber(kakaoPhone) : null;
 
-  const ckeckKakaoUser = await ivyDb.user.findUnique({
+  const existingUser = await caDb.teacher.findUnique({
     where: {
       kakaoId,
+      brand: 'ivy'
+    },
+    select: {
+      id: true,
+      isRegist: true
+    },
+  });
+
+  if (existingUser) {
+    if (existingUser.isRegist) {
+      const user = await caDb.teacher.update({
+        where: { id: existingUser.id },
+        data: {
+          username: kakaoName,
+          email: kakaoEmail,
+          phone: phoneNumber,
+          avatar: kakaoProfileImg,
+        },
+        select: { id: true },
+      });
+      return await UserLogin(user.id, 'ivy', redirectUrl);
+    } 
+    else {
+      return redirect(`/signup-complete?redirectUrl=${redirectUrl}&status=pending`);
+    }
+  }
+
+  const ckeckKakaoUser = await caDb.teacher.findUnique({
+    where: {
+      kakaoId,
+      isRegist : true,
+      brand : 'ivy'
     },
     select: {
       id: true,
     },
   });
   if (ckeckKakaoUser) {
-    // 카카오 회원가입을 이미 했을 때
-    const user = await ivyDb.user.update({
+    const user = await caDb.teacher.update({
       where: {
         kakaoId,
+        brand : 'ivy'
       },
       data: {
         username: kakaoName,
@@ -85,27 +118,23 @@ export async function GET(req: NextRequest) {
       },
       select: {
         id: true,
+        brand : true,
       },
     });
 
-    return await UserLogin(user.id, redirectUrl);
-    // Redirect
+    return await UserLogin(user.id, 'brand', redirectUrl);
   }
 
-  const checkEmail = kakaoEmail
-    ? await ivyDb.user.findUnique({
-        where: {
-          email: kakaoEmail,
-        },
-        select: {
-          id: true,
-        },
-      })
-    : null;
+  const checkEmail = kakaoEmail ? await caDb.teacher.findFirst({
+    where: { email: kakaoEmail, isRegist: true }, 
+    select: { id: true },
+  }) : null;
+
   if (checkEmail) {
-    const user = await ivyDb.user.update({
+    const user = await caDb.teacher.update({
       where: {
         id: checkEmail.id,
+        isRegist : true,
       },
       data: {
         username: kakaoName,
@@ -113,14 +142,15 @@ export async function GET(req: NextRequest) {
       },
       select: {
         id: true,
+        brand : true,
       },
     });
 
-    return await UserLogin(user.id, redirectUrl);
+    return await UserLogin(user.id, 'ivy', redirectUrl);
   }
 
   // 최종적으로 유저 생성
-  const user = await ivyDb.user.create({
+  const user = await caDb.teacher.create({
     data: {
       kakaoId,
       username: kakaoName || `kakao-${crypto.randomBytes(6).toString("hex")}`,
@@ -129,14 +159,15 @@ export async function GET(req: NextRequest) {
       email: kakaoEmail,
       avatar: kakaoProfileImg || "",
       phone: phoneNumber,
+      brand : 'ivy',
+      updatedAt : new Date(),
     },
     select: {
       id: true,
     },
   });
 
-  await UserLogin(user.id);
   return redirect(
-    `/signup-complete?redirectUrl=${redirectUrl}&userId=${user.id}`
+    `/signup-complete?redirectUrl=${redirectUrl}`
   );
 }

@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   }
 
   const searchParams = new URLSearchParams({
-    client_id: process.env.KAKAO_ivy_CLIENT_ID!,
+    client_id: process.env.KAKAO_IVY_CLIENT_ID!,
     redirect_uri: process.env.NEXT_PUBLIC_APP_URL! + "/kakao/ivy/complete",
     response_type: "code",
   }).toString();

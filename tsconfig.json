@@ -26,6 +26,7 @@
       "@/*": ["./src/*"],
       "@prisma/cojooboo-client": ["./src/generated/cojooboo"],
       "@prisma/ivy-client": ["./src/generated/ivy"],
+        "@prisma/classaround-client": ["./src/generated/classaround"],
     }
   },
   "include": [

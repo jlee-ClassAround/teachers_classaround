@@ -1,21 +1,20 @@
 export async function GET(req: Request) {
-  const referer = req.headers.get("referer");
-  const url = referer ? new URL(referer) : null;
-  const redirectData = url ? url.searchParams.get("redirect") : null;
-  if (redirectData?.startsWith("http")) {
-    return Response.redirect("/login");
-  }
+  const { searchParams } = new URL(req.url);
 
-  const searchParams = new URLSearchParams({
-    client_id: process.env.KAKAO_COJOOBOO_CLIENT_ID!,
-    redirect_uri: process.env.NEXT_PUBLIC_APP_URL! + "/kakao/cojooboo/complete",
+  const redirectData = searchParams.get("redirect") ?? "/";
+
+
+
+  const client_id = process.env.KAKAO_COJOOBOO_CLIENT_ID;
+  const redirectUri = process.env.NEXT_PUBLIC_APP_URL! +"/kakao/cojooboo/complete";
+
+  const kakaoParams = new URLSearchParams({
+    client_id: client_id ?? '',
+    redirect_uri: redirectUri,
     response_type: "code",
-  }).toString();
-
-  const redirectPath = redirectData
-    ? `&state=${encodeURIComponent(redirectData)}`
-    : "";
+  });
+  console.log(kakaoParams)
   return Response.redirect(
-    `https://kauth.kakao.com/oauth/authorize?${searchParams}${redirectPath}`
+    `https://kauth.kakao.com/oauth/authorize?${kakaoParams.toString()}`
   );
 }

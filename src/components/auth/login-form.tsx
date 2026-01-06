@@ -13,7 +13,6 @@ type BrandMeta = {
   title: string;
   subtitle: string;
   logoSrc: string;
-  startPath: string; // ✅ 브랜드별 카카오 시작 라우트
 };
 
 const BRANDS: BrandMeta[] = [
@@ -22,14 +21,12 @@ const BRANDS: BrandMeta[] = [
     title: "코주부클래스",
     subtitle: "cojooboo",
     logoSrc: "/brands/cojooboo.svg",
-    startPath: "/kakao/cojooboo/start",
   },
   {
     key: "ivy",
     title: "아이비클래스",
     subtitle: "ivy",
     logoSrc: "/brands/ivy.svg",
-    startPath: "/kakao/ivy/start",
   },
 ];
 
@@ -51,14 +48,14 @@ export default function LoginForm() {
 
     setIsLoading(true);
     requestAnimationFrame(() => {
-      router.push(selectedMeta.startPath);
+      const path = `kakao/${selectedBrand}/start`;
+      router.push(path);
+      
     });
   };
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
-      <div className="w-full max-w-md sm:pt-10 mx-auto mb-5" />
-
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div>
           <div className="mb-5 sm:mb-8">

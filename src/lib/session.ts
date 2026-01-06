@@ -4,7 +4,8 @@ import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 
 interface sessionProps {
-  id?: string;
+  id: string;
+  brand : string;
 }
 
 export async function getSession() {

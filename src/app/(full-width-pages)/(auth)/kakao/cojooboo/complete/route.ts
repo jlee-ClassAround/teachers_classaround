@@ -1,9 +1,10 @@
 import { KakaoUser } from "@/app/types/kakao-user";
-import { cojoobooDb } from "@/lib/cojoobooDb";
+import { caDb } from "@/lib/caDb";
 import { normalizeKRPhoneNumber } from "@/lib/formats";
 import { UserLogin } from "@/lib/user-login";
 
 import crypto from "crypto";
+import { Faster_One } from "next/font/google";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
@@ -63,19 +64,51 @@ export async function GET(req: NextRequest) {
 
   const phoneNumber = kakaoPhone ? normalizeKRPhoneNumber(kakaoPhone) : null;
 
-  const ckeckKakaoUser = await cojoobooDb.user.findUnique({
+  const existingUser = await caDb.teacher.findUnique({
     where: {
       kakaoId,
+      brand: 'cojooboo'
+    },
+    select: {
+      id: true,
+      isRegist: true
+    },
+  });
+
+  if (existingUser) {
+    if (existingUser.isRegist) {
+      const user = await caDb.teacher.update({
+        where: { id: existingUser.id },
+        data: {
+          username: kakaoName,
+          email: kakaoEmail,
+          phone: phoneNumber,
+          avatar: kakaoProfileImg,
+        },
+        select: { id: true },
+      });
+      return await UserLogin(user.id, 'cojooboo', redirectUrl);
+    } 
+    else {
+      return redirect(`/signup-complete?redirectUrl=${redirectUrl}&status=pending`);
+    }
+  }
+
+  const ckeckKakaoUser = await caDb.teacher.findUnique({
+    where: {
+      kakaoId,
+      isRegist : true,
+      brand : 'cojooboo'
     },
     select: {
       id: true,
     },
   });
   if (ckeckKakaoUser) {
-    // 카카오 회원가입을 이미 했을 때
-    const user = await cojoobooDb.user.update({
+    const user = await caDb.teacher.update({
       where: {
         kakaoId,
+        brand : 'cojooboo'
       },
       data: {
         username: kakaoName,
@@ -85,27 +118,23 @@ export async function GET(req: NextRequest) {
       },
       select: {
         id: true,
+        brand : true,
       },
     });
 
-    return await UserLogin(user.id, redirectUrl);
-    // Redirect
+    return await UserLogin(user.id, 'brand', redirectUrl);
   }
 
-  const checkEmail = kakaoEmail
-    ? await cojoobooDb.user.findFirst({
-        where: {
-          email: kakaoEmail,
-        },
-        select: {
-          id: true,
-        },
-      })
-    : null;
+  const checkEmail = kakaoEmail ? await caDb.teacher.findFirst({
+    where: { email: kakaoEmail, isRegist: true }, 
+    select: { id: true },
+  }) : null;
+
   if (checkEmail) {
-    const user = await cojoobooDb.user.update({
+    const user = await caDb.teacher.update({
       where: {
         id: checkEmail.id,
+        isRegist : true,
       },
       data: {
         username: kakaoName,
@@ -113,14 +142,15 @@ export async function GET(req: NextRequest) {
       },
       select: {
         id: true,
+        brand : true,
       },
     });
 
-    return await UserLogin(user.id, redirectUrl);
+    return await UserLogin(user.id, 'cojooboo', redirectUrl);
   }
 
   // 최종적으로 유저 생성
-  const user = await cojoobooDb.user.create({
+  const user = await caDb.teacher.create({
     data: {
       kakaoId,
       username: kakaoName || `kakao-${crypto.randomBytes(6).toString("hex")}`,
@@ -129,14 +159,15 @@ export async function GET(req: NextRequest) {
       email: kakaoEmail,
       avatar: kakaoProfileImg || "",
       phone: phoneNumber,
+      brand : 'cojooboo',
+      updatedAt : new Date(),
     },
     select: {
       id: true,
     },
   });
 
-  await UserLogin(user.id);
   return redirect(
-    `/signup-complete?redirectUrl=${redirectUrl}&userId=${user.id}`
+    `/signup-complete?redirectUrl=${redirectUrl}`
   );
 }

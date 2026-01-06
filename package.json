@@ -8,10 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "db:sync": "yarn db:pull && yarn db:generate",
-    "db:pull": "prisma db pull --schema=prisma/cojooboo/schema.prisma && prisma db pull --schema=prisma/ivy/schema.prisma ",
-    "db:generate": "prisma generate --schema=prisma/cojooboo/schema.prisma && prisma generate --schema=prisma/ivy/schema.prisma ",
+    "db:pull": "prisma db pull --schema=prisma/cojooboo/schema.prisma && prisma db pull --schema=prisma/ivy/schema.prisma && prisma db pull --schema=prisma/classaround/schema.prisma",
+    "db:generate": "prisma generate --schema=prisma/cojooboo/schema.prisma && prisma generate --schema=prisma/ivy/schema.prisma && prisma generate --schema=prisma/classaround/schema.prisma",
     "tc": "tsc --noEmit",
-    "postinstall": "prisma generate --schema=prisma/cojooboo/schema.prisma && prisma generate --schema=prisma/ivy/schema.prisma "
+    "postinstall": "prisma generate --schema=prisma/cojooboo/schema.prisma && prisma generate --schema=prisma/ivy/schema.prisma && prisma generate --schema=prisma/classaround/schema.prisma"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.19",
@@ -39,7 +39,8 @@
     "react-dom": "^19.2.0",
     "react-dropzone": "^14.3.8",
     "swiper": "^11.2.10",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
