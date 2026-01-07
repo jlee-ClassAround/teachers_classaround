@@ -3,7 +3,6 @@
 import { useSidebar } from "@/context/SidebarContext";
 
 import AppSidebar from "@/layout/AppSidebar";
-import Backdrop from "@/layout/Backdrop";
 import Header from "@/layout/Header";
 import { cn } from "@/lib/utils";
 import React from "react";
