@@ -1,9 +1,11 @@
 "use client";
 
 import { useSidebar } from "@/context/SidebarContext";
-import AppHeader from "@/layout/AppHeader";
+
 import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
+import Header from "@/layout/Header";
+import { cn } from "@/lib/utils";
 import React from "react";
 
 export default function AdminLayout({
@@ -20,19 +22,26 @@ export default function AdminLayout({
     ? "lg:ml-[290px]"
     : "lg:ml-[90px]";
 
-  return (
-    <div className="min-h-screen xl:flex">
-      {/* Sidebar and Backdrop */}
+return (
+    <div className="relative flex min-h-screen">
+      {/* 사이드바 영역 */}
       <AppSidebar />
-      <Backdrop />
-      {/* Main Content Area */}
+
+      {/* 메인 콘텐츠 영역 */}
       <div
-        className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
+        className={cn(
+          "flex-1 transition-all duration-300 ease-in-out",
+          !isMobileOpen && mainContentMargin 
+        )}
       >
-        {/* Header */}
-        <AppHeader />
-        {/* Page Content */}
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+        <Header />
+
+        {/* 페이지 본문 (새 코드의 패딩 및 맥스 너비 적용) */}
+        <main className="bg-slate-100 min-h-[calc(100vh-3rem)]">
+          <div className="mx-auto p-4 md:p-6 max-w-[1600px]">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );
