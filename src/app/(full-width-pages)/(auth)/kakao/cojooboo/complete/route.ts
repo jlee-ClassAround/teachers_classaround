@@ -85,9 +85,9 @@ export async function GET(req: NextRequest) {
           phone: phoneNumber,
           avatar: kakaoProfileImg,
         },
-        select: { id: true },
+        select: { id: true , tId : true},
       });
-      return await UserLogin(user.id, 'cojooboo', redirectUrl);
+      return await UserLogin(user.id, user.tId ?? '', 'cojooboo', redirectUrl);
     } 
     else {
       return redirect(`/signup-complete?redirectUrl=${redirectUrl}&status=pending`);
@@ -118,11 +118,11 @@ export async function GET(req: NextRequest) {
       },
       select: {
         id: true,
-        brand : true,
+        tId : true,
       },
     });
 
-    return await UserLogin(user.id, 'brand', redirectUrl);
+    return await UserLogin(user.id, user.tId ?? '', 'cojooboo', redirectUrl);
   }
 
   const checkEmail = kakaoEmail ? await caDb.teacher.findFirst({
@@ -142,11 +142,11 @@ export async function GET(req: NextRequest) {
       },
       select: {
         id: true,
-        brand : true,
+        tId : true,
       },
     });
 
-    return await UserLogin(user.id, 'cojooboo', redirectUrl);
+    return await UserLogin(user.id, user.tId ?? '', 'cojooboo', redirectUrl);
   }
 
   // 최종적으로 유저 생성

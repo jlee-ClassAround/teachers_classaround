@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { caDb } from "@/lib/caDb";
 
+
 export async function GET() {
   try {
     const session = await getSession();

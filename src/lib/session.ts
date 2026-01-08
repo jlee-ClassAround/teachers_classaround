@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 interface sessionProps {
   id: string;
+  tId : string;
   brand : string;
 }
 
