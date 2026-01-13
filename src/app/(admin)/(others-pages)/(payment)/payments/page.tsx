@@ -36,7 +36,7 @@ export default async function InstructorLecturePaymentsPage({ searchParams }: an
                 items={[{ label: "홈", href: "/" }, { label: "매출 관리" }]} 
             />
 
-            <h1 className="text-2xl font-bold">강의별 매출 현황</h1>
+
 
             <Card className="p-6 border-none shadow-sm bg-white dark:bg-gray-800">
                 <div className="mb-4">
