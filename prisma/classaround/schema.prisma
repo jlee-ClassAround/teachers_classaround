@@ -19,7 +19,7 @@ model Role {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model User {
-  id        String    @id @default(uuid())
+  id        String    @id(map: "users_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String?   @unique(map: "user_userid_key")
   password  String
   email     String?   @db.VarChar(255)
@@ -33,7 +33,7 @@ model User {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Teacher {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   username  String?
   nickname  String?
   email     String?

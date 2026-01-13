@@ -37,6 +37,11 @@ const Table: React.FC<TableProps> = ({ children, className }) => {
   return <table className={`min-w-full  ${className}`}>{children}</table>;
 };
 
+const TableHead: React.FC<TableCellProps> = ({ children, className, colSpan }) => (
+  <th colSpan={colSpan} className={`font-medium text-left ${className}`}>
+    {children}
+  </th>
+);
 // TableHeader Component
 const TableHeader: React.FC<TableHeaderProps> = ({ children, className }) => {
   return <thead className={className}>{children}</thead>;
@@ -62,4 +67,4 @@ const TableCell: React.FC<TableCellProps> = ({
   return <CellTag className={` ${className}`}>{children}</CellTag>;
 };
 
-export { Table, TableHeader, TableBody, TableRow, TableCell };
+export { Table,TableHead,  TableHeader, TableBody, TableRow, TableCell };

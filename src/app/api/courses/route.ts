@@ -11,32 +11,44 @@ export async function GET(){
       return NextResponse.json({ error: "인증되지 않은 사용자입니다." }, { status: 401 });
     }
 
-    if(session.brand === 'cojooboo'){
-        const courses = await cojoobooDb.course.findMany({
-          where: {
-            teachers: {
-              some: {
-                id: session.tId, 
-              },
+    if (session.brand === 'cojooboo') {
+      const courses = await cojoobooDb.course.findMany({
+        where: {
+          teachers: {
+            some: {
+              id: session.tId,
             },
           },
-          include: {
-            teachers: {
-              select: {
-                id: true,
-
-              }
+        },
+        include: {
+          teachers: {
+            select: {
+              id: true,
             },
-            _count: {
-              select: { enrollments: true } 
-            }
           },
-          orderBy: {
-            createdAt: "desc",
+          enrollments: {
+            where: {
+              role: null,
+            },
+            select: {
+              id: true, 
+            },
           },
-        });
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
 
-        return NextResponse.json(courses);
+      const formattedCourses = courses.map((course) => ({
+        ...course,
+        _count: {
+          enrollments: course.enrollments.length, 
+        },
+        enrollments: undefined, 
+      }));
+
+      return NextResponse.json(formattedCourses);
 
     }else{
         const courses = await ivyDb.course.findMany({

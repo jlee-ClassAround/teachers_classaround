@@ -72,8 +72,6 @@ export default function CourseTable({ searchTerm }: Props) {
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
                   <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">강의명</TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">타입</TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">정가</TableCell>
                   <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">강의일</TableCell>
                   <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">등록 인원</TableCell>
                 </TableRow>
@@ -97,12 +95,6 @@ export default function CourseTable({ searchTerm }: Props) {
                             {course.title}
                           </Link>
                         </div>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                        {course.productType === 'SIMPLE' ? '단일' : '옵션'}
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                        {course.originalPrice.toLocaleString()}원
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                         {course.endDate ? new Date(course.endDate).toLocaleDateString('ko-KR') : "-"}

@@ -4,6 +4,7 @@ import './globals.css';
 import { SidebarProvider } from '@/context/SidebarContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Metadata } from 'next';
+import { Toaster } from 'sonner';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -26,6 +27,8 @@ export default function RootLayout({
         <ThemeProvider>
           <SidebarProvider>{children}</SidebarProvider>
         </ThemeProvider>
+
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );
