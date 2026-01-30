@@ -32,6 +32,7 @@ model User {
   revenues        Revenue[]
   revieww         Review[]
   tossCustomers   TossCustomer[]
+  Transaction     Transaction[]
   Role            Role?            @relation(fields: [roleId], references: [id])
   UserBillingInfo UserBillingInfo?
   userCoupons     UserCoupon[]
@@ -258,6 +259,7 @@ model Enrollment {
   courseOptionId String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  role           String?
   course         Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseOption   CourseOption? @relation(fields: [courseOptionId], references: [id])
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -558,7 +560,7 @@ model Order {
   discountedPrice Int?
   usedCoupon      Json?
   createdAt       DateTime    @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime    @db.Timestamp(6)
+  updatedAt       DateTime    @default(now()) @db.Timestamp(6)
   userId          String?
   user            User?       @relation(fields: [userId], references: [id])
   orderItems      OrderItem[]
@@ -576,7 +578,7 @@ model OrderItem {
   originalPrice   Int
   discountedPrice Int?
   createdAt       DateTime        @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime        @db.Timestamp(6)
+  updatedAt       DateTime        @default(now()) @db.Timestamp(6)
   orderId         String
   courseId        String?
   ebookId         String?
@@ -602,12 +604,13 @@ model Payment {
   canceledAt          DateTime?        @db.Timestamp(6)
   receiptUrl          String?
   createdAt           DateTime         @default(now()) @db.Timestamp(6)
-  updatedAt           DateTime         @db.Timestamp(6)
+  updatedAt           DateTime         @default(now()) @db.Timestamp(6)
   orderId             String
   billingSnapshotId   String?
   billingSnapshot     BillingSnapshot? @relation(fields: [billingSnapshotId], references: [id])
   order               Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
   paymentCancel       PaymentCancel[]
+  Transaction         Transaction[]
   VirtualAccount      VirtualAccount?
 }
 
@@ -646,18 +649,34 @@ model UserBillingInfo {
 }
 
 model VirtualAccount {
-  id             String        @id(map: "virtualaccount_pkey") @default(dbgenerated("(gen_random_uuid())::text"))
+  id             String        @id
   accountNumber  String
   bankCode       String
   customerName   String
-  dueDate        DateTime      @db.Timestamp(6)
+  dueDate        DateTime
   refundStatus   String        @default("NONE")
-  createdAt      DateTime      @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime      @db.Timestamp(6)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now())
   paymentId      String        @unique
   tossCustomerId String?       @unique
   Payment        Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade, map: "virtualaccount_paymentid_fkey")
   TossCustomer   TossCustomer? @relation(fields: [tossCustomerId], references: [id], map: "virtualaccount_tosscustomerid_fkey")
+}
+
+model Transaction {
+  id          String        @id
+  mId         String?
+  orderId     String
+  method      PaymentMethod
+  status      PaymentStatus
+  customerKey String
+  currency    String        @default("KRW")
+  amount      Int
+  createdAt   DateTime      @default(now())
+  userId      String?
+  paymentId   String
+  Payment     Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  User        User?         @relation(fields: [userId], references: [id])
 }
 
 enum ProductType {
